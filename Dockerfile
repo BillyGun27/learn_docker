@@ -39,7 +39,7 @@ RUN apt-cache search linux-headers-generic
 # PyTorch
 #RUN pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.1-cp35-cp35m-linux_x86_64.whl \
 #    && pip3 install torchvision==0.2.1
-RUN pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+RUN pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html 
 
 # Caffe
 # RUN apt-get update && apt-get upgrade -y \
