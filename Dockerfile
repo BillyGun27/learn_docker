@@ -16,7 +16,8 @@
 #
 
 # Dockerfile for python AI actions, overrides and extends ActionRunner from actionProxy
-FROM tensorflow/tensorflow:1.11.0-py3
+#FROM tensorflow/tensorflow:1.11.0-py3
+FROM python:3.6
 
 ENV FLASK_PROXY_PORT 8080
 ENV PYTHONIOENCODING "UTF-8"
@@ -36,8 +37,10 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
 RUN apt-cache search linux-headers-generic
 
 # PyTorch
-RUN pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.1-cp35-cp35m-linux_x86_64.whl \
-    && pip3 install torchvision==0.2.1
+#RUN pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.1-cp35-cp35m-linux_x86_64.whl \
+#    && pip3 install torchvision==0.2.1
+RUN pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
+
 # Caffe
 # RUN apt-get update && apt-get upgrade -y \
 #     && apt-get install -y \
@@ -45,9 +48,9 @@ RUN pip3 install http://download.pytorch.org/whl/cpu/torch-0.4.1-cp35-cp35m-linu
 #     libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler \
 #     && apt-get install -y --no-install-recommends libboost-all-dev
 
-RUN curl -L https://downloads.rclone.org/rclone-current-linux-amd64.deb -o rclone.deb \
-    && dpkg -i rclone.deb \
-    && rm rclone.deb
+#RUN curl -L https://downloads.rclone.org/rclone-current-linux-amd64.deb -o rclone.deb \
+#    && dpkg -i rclone.deb \
+#    && rm rclone.deb
 
 COPY requirements.txt requirements.txt
 RUN pip3 install --upgrade pip six && pip3 install --no-cache-dir -r requirements.txt
