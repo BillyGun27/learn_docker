@@ -1,19 +1,33 @@
-# Dockerfile for python actions, overrides and extends ActionRunner from actionProxy
-FROM openwhisk/dockerskeleton:1.14.0
+# Dockerfile for python AI actions, overrides and extends ActionRunner from actionProxy
+FROM tensorflow/tensorflow:1.11.0-py3
 FROM python:3.6
 
-RUN apk add --no-cache \
-        bzip2-dev \
+ENV FLASK_PROXY_PORT 8080
+ENV PYTHONIOENCODING "UTF-8"
+
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         gcc \
         libc-dev \
         libxslt-dev \
         libxml2-dev \
         libffi-dev \
-        linux-headers \
-        openssl-dev
+        libssl-dev \
+        zip \
+        unzip \
+        vim \
+        && rm -rf /var/lib/apt/lists/*
 
+RUN apt-cache search linux-headers-generic
+
+RUN curl -L https://downloads.rclone.org/rclone-current-linux-amd64.deb -o rclone.deb \
+    && dpkg -i rclone.deb \
+    && rm rclone.deb
+    
 #COPY requirements.txt requirements.txt
 #RUN pip3 install --upgrade pip six && pip3 install --no-cache-dir -r requirements.txt
+
+RUN pip3 install --upgrade pip six
+
 RUN pip install --upgrade pip && \
     pip install minio && \
     pip install pyyaml && \
@@ -28,11 +42,10 @@ RUN pip install --upgrade pip && \
     pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html && \
     pip install Unidecode==1.1.1
  
-ENV FLASK_PROXY_PORT 8080
+RUN mkdir -p /actionProxy
+ADD https://raw.githubusercontent.com/apache/openwhisk-runtime-docker/dockerskeleton%401.3.3/core/actionProxy/actionproxy.py /actionProxy/actionproxy.py
 
 RUN mkdir -p /pythonAction
-ADD pythonrunner.py /pythonAction/
-RUN rm -rf /action
-RUN mkdir /action
+COPY pythonrunner.py /pythonAction/pythonrunner.py
 
-CMD ["/bin/bash", "-c", "cd pythonAction && python -u pythonrunner.py"]
+CMD ["/bin/bash", "-c", "cd /pythonAction && python -u pythonrunner.py"]
